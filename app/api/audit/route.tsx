@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   const { url } = await req.json()
   if (!url) return NextResponse.json({ error: "URL is required" }, { status: 400 })
 
-  const browser = await puppeteer.launch({ headless: "new" })
+  const browser = await puppeteer.launch({ headless: true })
   const page = await browser.newPage()
   await page.goto(url, { waitUntil: "networkidle2" })
 

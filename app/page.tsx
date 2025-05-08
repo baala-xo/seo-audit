@@ -15,7 +15,7 @@ export default function Home() {
     const res = await fetch("/api/audit", {
       method: "POST",
       body: JSON.stringify({ url }),
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     })
     const data = await res.json()
     setResult(data)
@@ -23,14 +23,20 @@ export default function Home() {
   }
 
   return (
-    <main className="max-w-5xl mx-auto p-6 space-y-6">
+    <main className="mx-auto max-w-5xl space-y-6 p-6">
       <Card>
         <CardHeader>
           <CardTitle>SEO Audit Tool</CardTitle>
-          <CardDescription>Analyze SEO metadata, anchor links, and images from a website.</CardDescription>
+          <CardDescription>
+            Analyze SEO metadata, anchor links, and images from a website.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Input placeholder="https://example.com" value={url} onChange={(e) => setUrl(e.target.value)} />
+          <Input
+            placeholder="https://example.com"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
           <Button onClick={audit} disabled={loading}>
             {loading ? "Auditing..." : "Run Audit"}
           </Button>
@@ -39,6 +45,7 @@ export default function Home() {
 
       {result && (
         <>
+          {/* Basic Info */}
           <Card>
             <CardHeader>
               <CardTitle>Basic SEO Info</CardTitle>
@@ -51,6 +58,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
+          {/* Anchor Links */}
           <Card>
             <CardHeader>
               <CardTitle>Anchor Links</CardTitle>
@@ -58,10 +66,15 @@ export default function Home() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {result.anchorLinks?.length ? (
-                <ul className="list-disc pl-4 space-y-1">
+                <ul className="list-disc space-y-1 pl-4">
                   {result.anchorLinks.map((link: any, i: number) => (
                     <li key={i}>
-                      <a href={link.href ?? "#"} target="_blank" className="underline text-blue-600">
+                      <a
+                        href={link.href ?? "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                      >
                         {link.text || link.href}
                       </a>{" "}
                       {link.href?.startsWith("http") ? (
@@ -71,7 +84,9 @@ export default function Home() {
                       )}
                       {link.rel && ` | rel: ${link.rel}`}
                       {link.target && ` | target: ${link.target}`}
-                      <span className={`ml-2 font-semibold ${link.status?.includes("broken") ? "text-red-600" : "text-green-600"}`}>
+                      <span
+                        className={`ml-2 font-semibold ${link.status?.includes("broken") ? "text-red-600" : "text-green-600"}`}
+                      >
                         [{link.status}]
                       </span>
                     </li>
@@ -83,22 +98,34 @@ export default function Home() {
             </CardContent>
           </Card>
 
+          {/* Images */}
           <Card>
             <CardHeader>
               <CardTitle>Images</CardTitle>
-              <CardDescription>All images on the site with download option.</CardDescription>
+              <CardDescription>
+                All images on the site with download option.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <CardContent className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {result.images?.length ? (
                 result.images.map((img: any, i: number) => {
-                  const fullSrc = img.src?.startsWith("http") ? img.src : new URL(img.src, url).href
+                  const fullSrc = img.src?.startsWith("http")
+                    ? img.src
+                    : new URL(img.src, url).href
+
                   return (
-                    <div key={i} className="border p-2 rounded shadow-sm">
-                      <img src={fullSrc} alt={img.alt} className="object-contain h-32 w-full mb-2 rounded" />
+                    <div key={i} className="rounded border p-2 shadow-sm">
+                      <img
+                        src={fullSrc}
+                        alt={img.alt || `Image ${i}`}
+                        className="mb-2 h-32 w-full rounded object-contain"
+                      />
                       <a
                         href={fullSrc}
                         download
-                        className="text-sm text-blue-600 underline block text-center"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="block text-center text-sm text-blue-600 underline"
                       >
                         Download
                       </a>
